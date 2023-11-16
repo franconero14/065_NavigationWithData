@@ -30,7 +30,8 @@ import com.example.esjumbo.Data.SumberData.flavours
 enum class PengelolaHalaman {
     Home,
     Rasa,
-    Summary
+    Summary,
+    Formulir
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,30 +82,39 @@ fun EsJumboApp(
             modifier = Modifier.padding(innerPadding)
         )
         {
-            composable(route = PengelolaHalaman.Home.name){
-                HalamanHome (
-                    onNextButtonClicked = {
-                        navController.navigate(PengelolaHalaman.Rasa.name)})
+            composable(route = PengelolaHalaman.Home.name) {
+                HalamanHome(
+                    onNextButtonClicked = { navController.navigate(PengelolaHalaman.Formulir.name) })
             }
-            composable(route = PengelolaHalaman.Rasa.name){
+            composable(route = PengelolaHalaman.Formulir.name) {
+                HalamanForm(onSubmitButtonClick = {
+                    viewModel.setContact(it)
+                    navController.navigate(PengelolaHalaman.Rasa.name)
+                })
+            }
+            composable(route = PengelolaHalaman.Rasa.name) {
                 val context = LocalContext.current
                 HalamanSatu(
                     pilihanRasa = flavours.map { id ->
-                        context.resources.getString(id)},
-                    onSelectionChanged = {viewModel.setRasa(it)},
-                    onConfirmButtonClicked = {viewModel.setJumlah(it)},
-                    onNextButtonClicked = {navController.navigate(PengelolaHalaman.Summary.name)},
-                    onCancelButtonClicked = {cancelOrderAndNavigateToHome(
-                        viewModel,
-                        navController
-                    )
-                    })
+                        context.resources.getString(id)
+                    },
+                    onSelectionChanged = { viewModel.setRasa(it) },
+                    onConfirmButtonClicked = { viewModel.setJumlah(it) },
+                    onNextButtonClicked = { navController.navigate(PengelolaHalaman.Summary.name) },
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToHome(
+                            viewModel,
+                            navController
+                        )
+                    }
+                )
             }
             composable(route = PengelolaHalaman.Summary.name) {
                 HalamanDua(
                     orderUiState = uiState,
                     onCancelButtonCLicked = {
-                        cancelOrderAndNavigateToRasa(navController) },
+                        cancelOrderAndNavigateToRasa(navController)
+                    },
                     //onSendButtonClicked = { subject: String, Summary: String -> }
                 )
             }
